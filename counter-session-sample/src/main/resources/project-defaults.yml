@@ -1,0 +1,4 @@
+swarm:
+  logging:
+    root-logger:
+      level: DEBUG

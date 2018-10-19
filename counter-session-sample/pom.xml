@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.redhat.example</groupId>
+	<artifactId>counter-session-sample</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+
+	<name>Thorntail Session Clustering Example</name>
+
+	<properties>
+		<version.thorntail>2.2.0.Final-redhat-00021</version.thorntail>
+		<version.thorntail.community>2.2.0.Final</version.thorntail.community>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<failOnMissingWebXml>false</failOnMissingWebXml>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.thorntail</groupId>
+				<artifactId>bom</artifactId>
+				<version>${version.thorntail}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+	<dependencies>
+        <!-- Wildfly Swarm Fractions -->
+        <dependency>
+            <groupId>io.thorntail</groupId>
+            <artifactId>jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.thorntail</groupId>
+            <artifactId>cdi</artifactId>
+        </dependency>
+        <!-- Wildfly Swarm Fractions (Unsupported)-->
+		<dependency>
+			<groupId>io.thorntail</groupId>
+			<artifactId>jgroups</artifactId>
+			<version>${version.thorntail.community}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.thorntail</groupId>
+			<artifactId>infinispan</artifactId>
+			<version>${version.thorntail.community}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>io.thorntail</groupId>
+				<artifactId>thorntail-maven-plugin</artifactId>
+				<version>${version.thorntail}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>package</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- Specify the repositories containing RHOAR artifacts -->
+	<repositories>
+		<repository>
+			<id>redhat-ga</id>
+			<name>Red Hat GA Repository</name>
+			<url>https://maven.repository.redhat.com/ga/</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>redhat-ga</id>
+			<name>Red Hat GA Repository</name>
+			<url>https://maven.repository.redhat.com/ga/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<profiles>
+		<profile>
+			<id>openshift</id>
+			<properties>
+				<fabric8.generator.from>registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5</fabric8.generator.from>
+				<fabric8.build.strategy>s2i</fabric8.build.strategy>
+				<version.fabric8-maven-plugin>3.5.40</version.fabric8-maven-plugin>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>fabric8-maven-plugin</artifactId>
+						<version>${version.fabric8-maven-plugin}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>resource</goal>
+									<goal>build</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+<!-- 							<generator> -->
+<!-- 								<includes> -->
+<!-- 									<include>thorntail-v2</include> -->
+<!-- 								</includes> -->
+<!-- 								<excludes> -->
+<!-- 									<exclude>webapp</exclude> -->
+<!-- 								</excludes> -->
+<!-- 							</generator> -->
+							<images>
+								<image>
+									<name>${project.artifactId}</name>
+									<build>
+										<from>${fabric8.generator.from}</from>
+										<assembly>
+											<mode>dir</mode>
+											<descriptor>${project.basedir}/src/main/resources/assembly/release.xml</descriptor>
+										</assembly>
+									</build>
+								</image>
+							</images>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
