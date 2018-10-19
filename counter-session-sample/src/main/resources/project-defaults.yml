@@ -1,4 +1,11 @@
 swarm:
   logging:
-    root-logger:
-      level: DEBUG
+    loggers:
+      org.infinispan.topology:
+        level: DEBUG
+      org.jgroups.protocols:
+        level: DEBUG
+      org.xnio.safe-close:
+        level: TRACE
+    # root-logger:
+    #   level: DEBUG

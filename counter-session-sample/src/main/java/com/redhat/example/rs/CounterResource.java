@@ -1,5 +1,6 @@
 package com.redhat.example.rs;
 
+import java.net.InetAddress;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,11 +20,11 @@ public class CounterResource {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Map<String, Object> count() {
+	public Map<String, Object> count() throws Exception {
 		return new LinkedHashMap<String,Object>() {{
 			put("sessionId", session.getId());
 			put("requestCount", counter.increment());
-			put("host", System.getProperty("swarm.node.id", "N/A"));
+			put("host", InetAddress.getLocalHost().getHostName());
 		}};
 	}
 }

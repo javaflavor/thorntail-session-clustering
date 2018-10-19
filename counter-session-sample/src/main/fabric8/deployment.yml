@@ -4,5 +4,9 @@ spec:
       containers:
         - name: ${project.artifactId}
           env:
+          - name: SWARM_BIND_ADDRESS
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
           - name: OPENSHIFT_DNS_PING_SERVICE_NAME
             value: ${project.artifactId}-ping

@@ -2,7 +2,7 @@
 
 # Prerequisites
 
-You must install two custom fraction, infinispan and jgroups, in your local registry.
+You must install two custom fractions, infinispan and jgroups, in your local registry.
 
 ```bash
 $ mvn clean install -f jgroups/pom.xml
