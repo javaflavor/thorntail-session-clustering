@@ -15,5 +15,5 @@ $ mvn clean install -f infinispan/pom.xml
 $ oc login
 $ oc new-project <your-project>
 
-$ mvn clean fabric8:deploy -f counter-session-sample/pom.xml
+$ mvn clean fabric8:deploy -Popenshift -f counter-session-sample/pom.xml
 ```
