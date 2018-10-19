@@ -15,6 +15,11 @@
  */
 package org.wildfly.swarm.jgroups;
 
+import static org.wildfly.swarm.spi.api.Defaultable.string;
+
+import java.util.Optional;
+import java.util.logging.Logger;
+
 import org.wildfly.swarm.config.JGroups;
 import org.wildfly.swarm.config.runtime.AttributeDocumentation;
 import org.wildfly.swarm.spi.api.Defaultable;
@@ -23,14 +28,13 @@ import org.wildfly.swarm.spi.api.annotations.Configurable;
 import org.wildfly.swarm.spi.api.annotations.MarshalDMR;
 import org.wildfly.swarm.spi.api.annotations.WildFlyExtension;
 
-import static org.wildfly.swarm.spi.api.Defaultable.string;
-
 /**
  * @author Bob McWhirter
  */
 @WildFlyExtension(module = "org.jboss.as.clustering.jgroups")
 @MarshalDMR
 public class JGroupsFraction extends JGroups<JGroupsFraction> implements Fraction<JGroupsFraction> {
+	static Logger log = Logger.getLogger(JGroupsFraction.class.getName());
 
     public JGroupsFraction() {
     }
@@ -52,12 +56,17 @@ public class JGroupsFraction extends JGroups<JGroupsFraction> implements Fractio
     }
 
     public JGroupsFraction applyMulticastDefaults() {
+    	// ${env.JGROUPS_PING_PROTOCOL}: openshift.DNS_PING or openshift.KUBE_PING.
+    	String pingProtocol = Optional.ofNullable(System.getenv("JGROUPS_PING_PROTOCOL")).orElse("MPING");
+    	
+    	log.info("### Ping protocol: "+pingProtocol);
+    	
         return defaultChannel("swarm-jgroups")
 				.stack("tcp", (s) -> {
 					s.transport("TCP", (t) -> {
 						t.socketBinding("jgroups-tcp");
 					});
-					s.protocol("openshift.DNS_PING", p -> {
+					s.protocol(pingProtocol, p -> {
 						p.socketBinding("jgroups-mping");
 					});
 					s.protocol("MERGE3");
